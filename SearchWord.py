@@ -56,6 +56,46 @@ def find_word(documents, asked):
         
     return results
 
+def prefix_function(p):
+    m = len(p)             
+    Pi = [0] * m            
+    k = 0                   
+
+    for q in range(1, m):
+        while k > 0 and p[k] != p[q]:
+            k = Pi[k - 1]
+
+        if p[k] == p[q]:
+            k += 1 
+
+        Pi[q] = k  
+
+    return Pi
+
+def find_word_KMP(documents, word):
+    
+    # Preprocess word to get prefix function
+    Pi = prefix_function(word)
+    wordLen = len(word)
+    results = []
+
+    for l, row in enumerate(documents):
+        doc = row[2]
+        docLen = len(doc)
+        k = 0
+
+        for i in range(docLen):
+            while k > 0 and word[k] != doc[i]:
+                k = Pi[k - 1]
+            if word[k] == doc[i]:
+                k += 1
+            if k == wordLen:
+                results.append((f"Document {l + 1} occurs at {i - wordLen + 1}"))  # Document index and position
+                k = Pi[k - 1]
+    
+    return results
+
+
 
 # Streamlit UI
 st.header("Search for a Word in Documents")
@@ -71,8 +111,11 @@ if st.button("Search"):
                     cursor.execute("SELECT * FROM documents;")
                     documents = cursor.fetchall()
  
+# --------AZEEM idher time calc krr leen --------------------------
             search_results = find_word(documents, search_word)
-
+            
+            find_word_KMP(documents, search_word)
+            
             if search_results:
                 for result in search_results:
                     st.write(result)
