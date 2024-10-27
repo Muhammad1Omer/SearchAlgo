@@ -404,36 +404,35 @@ if st.session_state.results:
         st.write("No more results.")
                 
 
+if occurrences_basic or occurrences_kmp or  doc_indices:
+    fig, ax = plt.subplots(figsize=(12, 8))  # Increased size
 
-# Final plotting
-fig, ax = plt.subplots(figsize=(12, 8))  # Increased size
+    # Determine the maximum occurrences for bubble size calculation
+    max_occurrences = max(max(occurrences_basic, default=1), max(occurrences_kmp, default=1))
 
-# Determine the maximum occurrences for bubble size calculation
-max_occurrences = max(max(occurrences_basic, default=1), max(occurrences_kmp, default=1))
+    # Set x-axis and y-axis labels
+    ax.set_xlabel("Document Index")
+    ax.set_ylabel("Occurrences", color="gray")
+    ax.tick_params(axis="y", labelcolor="gray")
 
-# Set x-axis and y-axis labels
-ax.set_xlabel("Document Index")
-ax.set_ylabel("Occurrences", color="gray")
-ax.tick_params(axis="y", labelcolor="gray")
+    # Calculate bubble sizes as a fraction of the max occurrences
+    bubble_size_basic = (np.array(occurrences_basic) / max_occurrences) * 800
+    bubble_size_kmp = (np.array(occurrences_kmp) / max_occurrences) * 800
 
-# Calculate bubble sizes as a fraction of the max occurrences
-bubble_size_basic = (np.array(occurrences_basic) / max_occurrences) * 800
-bubble_size_kmp = (np.array(occurrences_kmp) / max_occurrences) * 800
+    # Create bubble scatter plots
+    ax.scatter(doc_indices, search_times_basic, s=bubble_size_basic, 
+            color='blue', alpha=0.6, edgecolor='black', label="Basic Search Occurrences")
+    ax.scatter(doc_indices, search_times_kmp, s=bubble_size_kmp, 
+            color='red', alpha=0.6, edgecolor='black', label="KMP Search Occurrences")
 
-# Create bubble scatter plots
-ax.scatter(doc_indices, search_times_basic, s=bubble_size_basic, 
-           color='blue', alpha=0.6, edgecolor='black', label="Basic Search Occurrences")
-ax.scatter(doc_indices, search_times_kmp, s=bubble_size_kmp, 
-           color='red', alpha=0.6, edgecolor='black', label="KMP Search Occurrences")
+    # Add grid, legend, and titles
+    ax.set_title("Performance of Basic vs. KMP Search", fontsize=18)
+    ax.legend(loc="upper left")
+    ax.grid(True)
 
-# Add grid, legend, and titles
-ax.set_title("Performance of Basic vs. KMP Search", fontsize=18)
-ax.legend(loc="upper left")
-ax.grid(True)
+    # Set y-axis limits dynamically based on the maximum occurrences
+    max_occurrence_value = max(max(search_times_basic, default=0), max(search_times_kmp, default=0))
+    ax.set_ylim(0, max_occurrence_value * 1.1)  # Add some padding (10%)
 
-# Set y-axis limits dynamically based on the maximum occurrences
-max_occurrence_value = max(max(search_times_basic, default=0), max(search_times_kmp, default=0))
-ax.set_ylim(0, max_occurrence_value * 1.1)  # Add some padding (10%)
-
-# Display the final graph
-st.pyplot(fig)
+    # Display the final graph
+    st.pyplot(fig)
