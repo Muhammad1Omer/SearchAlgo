@@ -404,7 +404,7 @@ if st.session_state.results:
         st.write("No more results.")
                 
 
-if occurrences_basic or occurrences_kmp or  doc_indices:
+if occurrences_basic and occurrences_kmp and  doc_indices:
     fig, ax = plt.subplots(figsize=(12, 8))  # Increased size
 
     # Determine the maximum occurrences for bubble size calculation
@@ -434,5 +434,9 @@ if occurrences_basic or occurrences_kmp or  doc_indices:
     max_occurrence_value = max(max(search_times_basic, default=0), max(search_times_kmp, default=0))
     ax.set_ylim(0, max_occurrence_value * 1.1)  # Add some padding (10%)
 
-    # Display the final graph
-    st.pyplot(fig)
+    try:
+        st.pyplot(fig)
+    except ValueError as e:
+        st.error(f"An error occurred while plotting: {str(e)}")
+else:
+    st.error("No data available for plotting.")
