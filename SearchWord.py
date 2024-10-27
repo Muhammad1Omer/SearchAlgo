@@ -8,9 +8,8 @@ DB_HOST = 'sql12.freesqldatabase.com'
 DB_NAME = 'sql12741043'
 DB_USER = 'sql12741043'
 DB_PASS = 'NLzNvI2xMP'
-DB_PORT = 3306  # MySQL default port is 3306
+DB_PORT = 3306  
 
-# Function to insert document into the database
 def add_document(title, content):
     try:
         conn = mysql.connector.connect(
@@ -53,6 +52,42 @@ def find_word_in_documents(documents, asked):
         results.append("Word doesn't exist in this document.")
     
     return results
+
+def prefix_function(p):
+    m = len(p)             
+    Pi = [0] * m            
+    k = 0                   
+
+    for q in range(1, m):
+        while k > 0 and p[k] != p[q]:
+            k = Pi[k - 1]
+
+        if p[k] == p[q]:
+            k += 1 
+
+        Pi[q] = k  
+
+    return Pi
+
+def find_word_KMP(documents, word):
+    Pi = prefix_function(word)
+    wordLen = len(word)
+    results = []
+
+    for l, row in enumerate(documents):
+        doc = row[2]
+        docLen = len(doc)
+        k = 0
+
+        for i in range(docLen):
+            while k > 0 and word[k] != doc[i]:
+                k = Pi[k - 1]
+            if word[k] == doc[i]:
+                k += 1
+            if k == wordLen:
+                results.append((f"Document {l + 1} occurs at {i - wordLen + 1}"))
+                k = Pi[k - 1]
+    
 
 # Streamlit UI
 st.title("Document Management System")
@@ -102,8 +137,10 @@ if st.button("Search"):
         cursor.execute(query)
         documents = cursor.fetchall()
 
-        # Find the word in the documents
+# ------------AZEEM Idher saay time calculate krr laay---------------------------------
         search_results = find_word_in_documents(documents, search_word)
+        
+        find_word_KMP(documents, search_word)
         
         # Display search results
         for result in search_results:
