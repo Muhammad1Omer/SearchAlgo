@@ -3,18 +3,18 @@ import psycopg2
 from datetime import datetime
 import re
 
-DB_HOST = 'localhost'
-DB_NAME = 'Algo_A3'
-DB_USER = 'postgres'
-DB_PASS = 'password'
+# DB_HOST = 'localhost'
+# DB_NAME = 'Algo_A3'
+# DB_USER = 'postgres'
+# DB_PASS = 'password'
 
-def create_connection():
-    return psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASS
-    )
+# def create_connection():
+#     return psycopg2.connect(
+#         host=DB_HOST,
+#         database=DB_NAME,
+#         user=DB_USER,
+#         password=DB_PASS
+#     )
 
 def add_document(title, content):
     if not title or not content:
